@@ -112,7 +112,10 @@ public:
 	~EpicsMetric() override
 	{
 		TLOG(TLVL_INFO) << "EPICS Metric Destructor";
-		MetricPlugin::stopMetrics();
+		// Only stop if still running. After a normal stop the channel list is
+		// empty, and a second stopMetrics() would search every channel again
+		// just to send it a zero (about a minute for 2000 channels).
+		if (running_) MetricPlugin::stopMetrics();
 	}
 
 	/**
